@@ -8,7 +8,6 @@ class KvkApi
 {
     protected string $apiKey;
     protected string $baseUrl;
-    protected string $url;
     protected string $rootCertificate;
 
     public function __construct(string $apiKey, string $rootCertificate)
@@ -34,22 +33,22 @@ class KvkApi
 
     public function search(string $companyName): object
     {
-        $this->url = $this->baseUrl . 'zoeken?handelsnaam=' . $companyName;
+        $url = $this->baseUrl . 'zoeken?handelsnaam=' . $companyName;
 
-        return $this->createHttpRequest($this->url);
+        return $this->createHttpRequest($url);
     }
 
     public function getBasicProfile(string $kvkNumber): object
     {
-        $this->url = $this->baseUrl . 'basisprofielen/' . $kvkNumber;
+        $url = $this->baseUrl . 'basisprofielen/' . $kvkNumber;
 
-        return $this->createHttpRequest($this->url);
+        return $this->createHttpRequest($url);
     }
 
     public function getLocationProfile(string $locationNumber): object
     {
-        $this->url = $this->baseUrl . 'vestigingsprofielen/' . $locationNumber;
+        $url = $this->baseUrl . 'vestigingsprofielen/' . $locationNumber;
 
-        return $this->createHttpRequest($this->url);
+        return $this->createHttpRequest($url);
     }
 }

@@ -26,8 +26,8 @@ class KvkApi
             'headers' => [
                 'apikey' => $this->apiKey
             ],
-            // 'cert' => $this->certPath,
-            'verify' => false
+            'cert' => $this->certPath,
+            // 'verify' => false
         ]);
 
         return json_decode($response->getBody()->getContents());
@@ -40,14 +40,14 @@ class KvkApi
         return $this->createHttpRequest($this->url);
     }
 
-    public function basicProfile(string $kvkNumber): object
+    public function getBasicProfile(string $kvkNumber): object
     {
         $this->url = $this->baseUrl . 'basisprofielen/' . $kvkNumber;
 
         return $this->createHttpRequest($this->url);
     }
 
-    public function locationProfile(string $locationNumber): object
+    public function getLocationProfile(string $locationNumber): object
     {
         $this->url = $this->baseUrl . 'vestigingsprofielen/' . $locationNumber;
 

@@ -14,7 +14,7 @@ class KvkApi
     public function __construct(string $apiKey, string $rootCertificate)
     {
         $this->apiKey = $apiKey;
-        $this->baseUrl = 'https://api.kvk.nl/test/api/v1/';
+        $this->baseUrl = 'https://api.kvk.nl/api/v1/';
         $this->rootCertificate = $rootCertificate;
     }
 

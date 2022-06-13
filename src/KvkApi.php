@@ -9,13 +9,13 @@ class KvkApi
     protected string $apiKey;
     protected string $baseUrl;
     protected string $url;
-    protected string $certPath;
+    protected string $rootCertificate;
 
-    public function __construct(string $apiKey, string $certPath)
+    public function __construct(string $apiKey, string $rootCertificate)
     {
         $this->apiKey = $apiKey;
         $this->baseUrl = 'https://api.kvk.nl/test/api/v1/';
-        $this->certPath = $certPath;
+        $this->rootCertificate = $rootCertificate;
     }
 
     private function createHttpRequest($url): object
@@ -26,11 +26,15 @@ class KvkApi
             'headers' => [
                 'apikey' => $this->apiKey,
             ],
-            // 'cert' => $this->certPath,
-            'verify' => false,
+            'verify' => $this->rootCertificate ?? false,
         ]);
 
-        return json_decode($response->getBody()->getContents());
+        return $this->getJson($response->getBody()->getContents());
+    }
+
+    public function getJson(string $data): object
+    {
+        return json_decode($data);
     }
 
     public function search(string $companyName): object

@@ -45,7 +45,7 @@ class Client
         return $this->createHttpRequest($url);
     }
 
-    public function getLocationProfile(string $locationNumber): object
+    public function getEstablishmentProfile(string $locationNumber): object
     {
         $url = $this->baseUrl . 'vestigingsprofielen/' . $locationNumber;
 

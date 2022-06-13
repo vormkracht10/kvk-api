@@ -1,10 +1,10 @@
 <?php
 
-namespace Vormkracht10\KvkApi;
+namespace Vormkracht10\KvKApi;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GuzzleClient;
 
-class KvkApi
+class Client
 {
     protected string $apiKey;
     protected string $baseUrl;
@@ -19,7 +19,7 @@ class KvkApi
 
     private function createHttpRequest(string $url): object
     {
-        $http = new Client();
+        $http = new GuzzleClient();
 
         $response = $http->request('GET', $url, [
             'headers' => [

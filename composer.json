@@ -1,6 +1,6 @@
 {
     "name": "vormkracht10/kvk-api",
-    "description": "Composer package for fetching information from the KvK (Dutch Chamber of Commerce) API",
+    "description": "KvK API client (Dutch Chamber of Commerce API)",
     "keywords": [
         "Vormkracht10",
         "kvk-api"
@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Vormkracht10\\KvkApi\\": "src"
+            "Vormkracht10\\KvKApi\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Vormkracht10\\KvkApi\\Tests\\": "tests"
+            "Vormkracht10\\KvKApi\\Tests\\": "tests"
         }
     },
     "scripts": {

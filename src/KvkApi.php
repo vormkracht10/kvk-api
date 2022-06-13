@@ -24,10 +24,10 @@ class KvkApi
 
         $response = $http->request('GET', $url, [
             'headers' => [
-                'apikey' => $this->apiKey
+                'apikey' => $this->apiKey,
             ],
-            'cert' => $this->certPath,
-            // 'verify' => false
+            // 'cert' => $this->certPath,
+            'verify' => false,
         ]);
 
         return json_decode($response->getBody()->getContents());

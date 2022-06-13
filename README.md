@@ -36,7 +36,7 @@ $companies = $kvk->search('Vormkracht10');
 $basicProfile = $kvk->getBasicProfile('76558606')
 
 // Search establishment profile by establishment number
-$locationProfile = $kvk->getEstablishmentProfile('000044332491')
+$establishmentProfile = $kvk->getEstablishmentProfile('000044332491')
 
 ```
 > Note: if you don't have an API key yet, get yours at the [developer portal](https://developers.kvk.nl/) of the Chamber of Commerce

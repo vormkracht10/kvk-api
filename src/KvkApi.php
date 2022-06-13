@@ -18,7 +18,7 @@ class KvkApi
         $this->rootCertificate = $rootCertificate;
     }
 
-    private function createHttpRequest($url): object
+    private function createHttpRequest(string $url): object
     {
         $http = new Client();
 
@@ -29,12 +29,7 @@ class KvkApi
             'verify' => $this->rootCertificate ?? false,
         ]);
 
-        return $this->getJson($response->getBody()->getContents());
-    }
-
-    public function getJson(string $data): object
-    {
-        return json_decode($data);
+        return json_decode($response->getBody()->getContents());
     }
 
     public function search(string $companyName): object

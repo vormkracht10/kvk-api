@@ -1,10 +1,10 @@
 <?php
 
-namespace Vormkracht10\KvkApi;
+namespace Vormkracht10\KvKApi;
 
 use GuzzleHttp\Client;
 
-class KvkApi
+class Client
 {
     protected string $apiKey;
     protected string $baseUrl;

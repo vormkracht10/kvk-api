@@ -2,7 +2,7 @@
 
 namespace Vormkracht10\KvKApi;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GuzzleClient;
 
 class Client
 {
@@ -20,7 +20,7 @@ class Client
 
     private function createHttpRequest($url): object
     {
-        $http = new Client();
+        $http = new GuzzleClient();
 
         $response = $http->request('GET', $url, [
             'headers' => [

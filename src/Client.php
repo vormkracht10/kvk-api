@@ -8,7 +8,7 @@ class Client
 {
     private $httpClient;
     private $baseUrl;
-        
+
     public function __construct($httpClient, $documentParser)
     {
         $this->httpClient = $httpClient;

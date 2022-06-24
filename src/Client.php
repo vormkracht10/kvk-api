@@ -2,10 +2,10 @@
 
 namespace Vormkracht10\KvKApi;
 
-use Illuminate\Support\Collection;
-use Swis\JsonApi\Client\TypeMapper;
 use GuzzleHttp\Client as GuzzleClient;
+use Illuminate\Support\Collection;
 use Swis\JsonApi\Client\Parsers\DocumentParser;
+use Swis\JsonApi\Client\TypeMapper;
 
 class Client
 {
@@ -76,17 +76,15 @@ class Client
     //     return $this->createHttpRequest($url);
     // }
 
-    private function getRelatedData($parsedData) : Collection
+    private function getRelatedData($parsedData): Collection
     {
         $relatedData = collect();
 
         collect($parsedData->getLinks())->each(function ($link, $key) use (&$relatedData) {
-
             $response = $this->createHttpRequest($link['href']);
             $relatedData[$key] = json_decode($response, true);
-
         });
-    
+
         return $relatedData;
     }
 
@@ -95,12 +93,15 @@ class Client
         switch ($type) {
             case 'basisprofiel':
                 return $data['attributes']->get('kvkNummer');
+
                 break;
             case 'vestigingsprofiel':
                 return $data['attributes']->get('vestigingsnummer');
+
                 break;
             default:
                 throw new \Exception('Unknown type');
+
                 break;
         }
     }
@@ -131,7 +132,7 @@ class Client
             $value['links'] = $links;
 
             // Define relationships
-            $value['relationships'] = $links->map(function ($link, $key) use ($value) {                
+            $value['relationships'] = $links->map(function ($link, $key) use ($value) {
                 return [
                     'data' => [
                         'type' => $key,
@@ -139,7 +140,7 @@ class Client
                     ],
                     'links' => [
                         'self' => $link,
-                    ]
+                    ],
                 ];
             });
 
@@ -147,7 +148,7 @@ class Client
         });
 
         $object = new \stdClass();
-        
+
         $object->data = $data;
 
         return $this->documentParser->parse(json_encode($object));

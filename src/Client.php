@@ -3,13 +3,13 @@
 namespace Vormkracht10\KvKApi;
 
 use GuzzleHttp\Client as GuzzleClient;
-use Vormkracht10\KvKApi\Models\Basisprofiel;
-use Vormkracht10\KvKApi\Models\Rechtspersoon;
-use Vormkracht10\KvKApi\Models\Hoofdvestiging;
-use Vormkracht10\KvKApi\Models\Vestigingsprofiel;
 use Illuminate\Support\Collection;
 use Swis\JsonApi\Client\Parsers\DocumentParser;
 use Swis\JsonApi\Client\TypeMapper;
+use Vormkracht10\KvKApi\Models\Basisprofiel;
+use Vormkracht10\KvKApi\Models\Hoofdvestiging;
+use Vormkracht10\KvKApi\Models\Rechtspersoon;
+use Vormkracht10\KvKApi\Models\Vestigingsprofiel;
 
 class Client
 {

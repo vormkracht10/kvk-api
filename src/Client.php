@@ -27,7 +27,7 @@ class Client
         $this->typeMapper->setMapping('vestigingsprofiel', Vestigingsprofiel::class);
         $this->typeMapper->setMapping('hoofdvestiging', Hoofdvestiging::class);
         $this->typeMapper->setMapping('rechtspersoon', Rechtspersoon::class);
-        
+
         $this->documentParser = DocumentParser::create($this->typeMapper);
     }
 

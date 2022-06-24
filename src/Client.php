@@ -2,9 +2,9 @@
 
 namespace Vormkracht10\KvKApi;
 
-use Swis\JsonApi\Client\TypeMapper;
 use GuzzleHttp\Client as GuzzleClient;
 use Swis\JsonApi\Client\Parsers\DocumentParser;
+use Swis\JsonApi\Client\TypeMapper;
 
 class Client
 {
@@ -26,7 +26,7 @@ class Client
         $this->typeMapper->setMapping('vestigingsprofiel', Vestigingsprofiel::class);
         $this->typeMapper->setMapping('hoofdvestiging', Hoofdvestiging::class);
         $this->typeMapper->setMapping('rechtspersoon', Rechtspersoon::class);
-        
+
         $this->documentParser = DocumentParser::create($this->typeMapper);
     }
 
@@ -76,7 +76,7 @@ class Client
             $value['links'] = $links;
 
             // Define relationships
-            $value['relationships'] = $links->map(function ($link, $key){
+            $value['relationships'] = $links->map(function ($link, $key) {
                 return [
                     'data' => [
                         'type' => $key,
@@ -84,7 +84,7 @@ class Client
                     ],
                     'links' => [
                         'self' => $link,
-                    ]
+                    ],
                 ];
             });
 

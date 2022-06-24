@@ -2,8 +2,8 @@
 
 namespace Vormkracht10\KvKApi\Models;
 
-use Swis\JsonApi\Client\Concerns\HasLinks;
 use Swis\JsonApi\Client\Item;
+use Swis\JsonApi\Client\Concerns\HasLinks;
 
 class Basisprofiel extends Item
 {
@@ -24,5 +24,10 @@ class Basisprofiel extends Item
     public function rechtspersoon()
     {
         return $this->hasOne(Rechtspersoon::class);
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
     }
 }

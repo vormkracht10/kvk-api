@@ -15,4 +15,9 @@ class Vestigingsprofiel extends Item
     {
         return $this->hasOne(Basisprofiel::class);
     }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
 }

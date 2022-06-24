@@ -2,151 +2,72 @@
 
 namespace Vormkracht10\KvKApi;
 
-use GuzzleHttp\Client as GuzzleClient;
-use Vormkracht10\KvKApi\Models\Basisprofiel;
-use Vormkracht10\KvKApi\Models\Rechtspersoon;
-use Vormkracht10\KvKApi\Models\Hoofdvestiging;
-use Vormkracht10\KvKApi\Models\Vestigingsprofiel;
 use Illuminate\Support\Collection;
-use Swis\JsonApi\Client\Parsers\DocumentParser;
-use Swis\JsonApi\Client\TypeMapper;
 
 class Client
 {
-    protected string $apiKey;
-    protected string $baseUrl;
-    protected string $rootCertificate;
-    protected DocumentParser $documentParser;
-    protected TypeMapper $typeMapper;
-
-    public function __construct(string $apiKey, string $rootCertificate)
+    private $httpClient;
+    private $baseUrl;
+        
+    public function __construct($httpClient, $documentParser)
     {
-        $this->apiKey = $apiKey;
+        $this->httpClient = $httpClient;
         $this->baseUrl = 'https://api.kvk.nl/api/v1/';
-        $this->rootCertificate = $rootCertificate;
-
-        $this->typeMapper = new TypeMapper();
-
-        $this->typeMapper->setMapping('basisprofiel', Basisprofiel::class);
-        $this->typeMapper->setMapping('vestigingsprofiel', Vestigingsprofiel::class);
-        $this->typeMapper->setMapping('hoofdvestiging', Hoofdvestiging::class);
-        $this->typeMapper->setMapping('rechtspersoon', Rechtspersoon::class);
-
-        $this->documentParser = DocumentParser::create($this->typeMapper);
+        $this->documentParser = $documentParser;
     }
 
-    private function createHttpRequest(string $url): string
+    public function search(string $search)
     {
-        $http = new GuzzleClient();
+        $url = $this->baseUrl . 'zoeken?handelsnaam=' . $search;
 
-        $response = $http->request('GET', $url, [
-            'headers' => [
-                'apikey' => $this->apiKey,
-            ],
-            'verify' => $this->rootCertificate ?? false,
-        ]);
+        $response = $this->httpClient->get($url);
 
+        return $this->getJson($response);
+    }
+
+    private function getJson(object $response)
+    {
         return $response->getBody()->getContents();
     }
 
-    public function search(string $companyName)
+    private function decodeJson(string $json)
     {
-        $url = $this->baseUrl . 'zoeken?handelsnaam=' . $companyName;
+        return json_decode($json);
+    }
 
-        $response = $this->createHttpRequest($url);
+    public function fetchSearch(string $search)
+    {
+        $data = $this->search($search);
 
-        $parsedData = $this->parseData($response);
+        $parsedData = $this->parseData($this->decodeJson($data));
 
-        $data = $parsedData->getData();
-
-        $data->each(function ($entity) {
-            dd($this->getRelatedData($entity));
+        $parsedData->getData()->each(function ($item) {
+            dd($this->getRelatedData($item));
         });
-
-        return $this->createHttpRequest($url);
     }
 
-    // public function getBasicProfile(string $kvkNumber): object
-    // {
-    //     $url = $this->baseUrl . 'basisprofielen/' . $kvkNumber;
-
-    //     return $this->createHttpRequest($url);
-    // }
-
-    // public function getEstablishmentProfile(string $locationNumber): object
-    // {
-    //     $url = $this->baseUrl . 'vestigingsprofielen/' . $locationNumber;
-
-    //     return $this->createHttpRequest($url);
-    // }
-
-    private function getRelatedData($parsedData): Collection
+    private function parseData(object $data)
     {
-        $relatedData = collect();
-
-        collect($parsedData->getLinks())->each(function ($link, $key) use (&$relatedData) {
-            $response = $this->createHttpRequest($link['href']);
-            $relatedData[$key] = json_decode($response, true);
-        });
-
-        return $relatedData;
-    }
-
-    private function getIdentifier(string $type, Collection $data)
-    {
-        switch ($type) {
-            case 'basisprofiel':
-                return $data['attributes']->get('kvkNummer');
-
-                break;
-            case 'vestigingsprofiel':
-                return $data['attributes']->get('vestigingsnummer');
-
-                break;
-            default:
-                throw new \Exception('Unknown type');
-
-                break;
-        }
-    }
-
-    private function parseData(string $response): object
-    {
-        $response = json_decode($response, true);
-
-        $data = collect($response['resultaten']);
+        $data = collect($data->resultaten);
 
         $data = $data->map(function ($value, $key) {
             // Set attributes
-            $value['attributes'] = collect($value)->except(['type', 'links']);
+            $value->attributes = collect($value)->except(['type', 'links']);
 
             // Set unique id
-            $value['id'] = uniqid();
+            $value->id = uniqid();
 
             // Remove all things in attributes that are inside $value
-            $value = collect($value)->except($value['attributes']->keys());
+            $value = collect($value)->except($value->attributes->keys());
 
             // Set links
             $links = collect($value['links']);
 
             $links = $links->mapWithKeys(function ($value, $key) {
-                return [$value['rel'] => $value['href']];
+                return [$value->rel => $value->href];
             });
 
             $value['links'] = $links;
-
-            // Define relationships
-            $value['relationships'] = $links->map(function ($link, $key) use ($value) {
-                return [
-                    'data' => [
-                        'type' => $key,
-                        'id' => $this->getIdentifier($key, $value),
-                    ],
-                    'links' => [
-                        'self' => $link,
-                    ],
-                ];
-            });
 
             return $value;
         });
@@ -156,5 +77,20 @@ class Client
         $object->data = $data;
 
         return $this->documentParser->parse(json_encode($object));
+    }
+
+    private function getRelatedData($parsedData): Collection
+    {
+        $relatedData = collect();
+
+        collect($parsedData->getLinks())->each(function ($link, $key) use (&$relatedData) {
+            $response = $this->httpClient->get($link['href']);
+
+            $data = $this->getJson($response);
+
+            $relatedData[$key] = $data;
+        });
+
+        return $relatedData;
     }
 }

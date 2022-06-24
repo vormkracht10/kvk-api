@@ -2,6 +2,7 @@
 
 namespace Vormkracht10\KvKApi;
 
+use Illuminate\Support\Collection;
 use Swis\JsonApi\Client\TypeMapper;
 use GuzzleHttp\Client as GuzzleClient;
 use Swis\JsonApi\Client\Parsers\DocumentParser;
@@ -50,52 +51,13 @@ class Client
 
         $response = $this->createHttpRequest($url);
 
-        // Change resultaten to data
-        $response = json_decode($response, true);
+        $parsedData = $this->parseData($response);
 
-        $data = collect($response['resultaten']);
+        $data = $parsedData->getData();
 
-        $data = $data->map(function ($value, $key) {
-
-            // Set unique id
-            $value['id'] = uniqid();
-
-            // Set attributes
-            $value['attributes'] = (object) collect($value)->except(['type', 'links']);
-
-            // Remove all things in attributes that are inside $value
-            $value = collect($value)->except($value['attributes']->keys());
-
-            // Set links
-            $links = collect($value['links']);
-
-            $links = $links->mapWithKeys(function ($value, $key) {
-                return [$value['rel'] => $value['href']];
-            });
-
-            $value['links'] = $links;
-
-            // Define relationships
-            $value['relationships'] = $links->map(function ($link, $key){
-                return [
-                    'data' => [
-                        'type' => $key,
-                        'id' => uniqid(),
-                    ],
-                    'links' => [
-                        'self' => $link,
-                    ]
-                ];
-            });
-
-            return $value;
+        $data->each(function ($entity) {
+            dd($this->getRelatedData($entity));
         });
-
-        // $response = json_encode($data);
-
-        dd($data->toJson());
-
-        dd($this->documentParser->parse($data->toJson()));
 
         return $this->createHttpRequest($url);
     }
@@ -113,4 +75,81 @@ class Client
 
     //     return $this->createHttpRequest($url);
     // }
+
+    private function getRelatedData($parsedData) : Collection
+    {
+        $relatedData = collect();
+
+        collect($parsedData->getLinks())->each(function ($link, $key) use (&$relatedData) {
+
+            $response = $this->createHttpRequest($link['href']);
+            $relatedData[$key] = json_decode($response, true);
+
+        });
+    
+        return $relatedData;
+    }
+
+    private function getIdentifier(string $type, Collection $data)
+    {
+        switch ($type) {
+            case 'basisprofiel':
+                return $data['attributes']->get('kvkNummer');
+                break;
+            case 'vestigingsprofiel':
+                return $data['attributes']->get('vestigingsnummer');
+                break;
+            default:
+                throw new \Exception('Unknown type');
+                break;
+        }
+    }
+
+    private function parseData(string $response): object
+    {
+        $response = json_decode($response, true);
+
+        $data = collect($response['resultaten']);
+
+        $data = $data->map(function ($value, $key) {
+            // Set attributes
+            $value['attributes'] = collect($value)->except(['type', 'links']);
+
+            // Set unique id
+            $value['id'] = uniqid();
+
+            // Remove all things in attributes that are inside $value
+            $value = collect($value)->except($value['attributes']->keys());
+
+            // Set links
+            $links = collect($value['links']);
+
+            $links = $links->mapWithKeys(function ($value, $key) {
+                return [$value['rel'] => $value['href']];
+            });
+
+            $value['links'] = $links;
+
+            // Define relationships
+            $value['relationships'] = $links->map(function ($link, $key) use ($value) {                
+                return [
+                    'data' => [
+                        'type' => $key,
+                        'id' => $this->getIdentifier($key, $value),
+                    ],
+                    'links' => [
+                        'self' => $link,
+                    ]
+                ];
+            });
+
+            return $value;
+        });
+
+        $object = new \stdClass();
+        
+        $object->data = $data;
+
+        return $this->documentParser->parse(json_encode($object));
+    }
 }

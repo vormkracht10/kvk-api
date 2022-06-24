@@ -5,7 +5,11 @@ namespace Vormkracht10\KvKApi;
 use Illuminate\Support\Collection;
 use Swis\JsonApi\Client\TypeMapper;
 use GuzzleHttp\Client as GuzzleClient;
+use Vormkracht10\KvKApi\Models\Basisprofiel;
+use Vormkracht10\KvKApi\Models\Rechtspersoon;
+use Vormkracht10\KvKApi\Models\Hoofdvestiging;
 use Swis\JsonApi\Client\Parsers\DocumentParser;
+use Vormkracht10\KvKApi\Models\Vestigingsprofiel;
 
 class Client
 {

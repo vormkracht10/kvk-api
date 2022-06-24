@@ -1,6 +1,6 @@
 <?php
 
-namespace Vormkracht10\KvKApi;
+namespace Vormkracht10\KvKApi\Models;
 
 use Swis\JsonApi\Client\Concerns\HasLinks;
 use Swis\JsonApi\Client\Item;

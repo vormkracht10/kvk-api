@@ -1,17 +1,17 @@
 <?php
 
-namespace Vormkracht10\KvKApi;
+namespace Vormkracht10\KvKApi\Models;
 
 use Swis\JsonApi\Client\Concerns\HasLinks;
 use Swis\JsonApi\Client\Item;
 
-class Rechtspersoon extends Item
+class Vestigingsprofiel extends Item
 {
     use HasLinks;
 
-    protected $type = 'rechtspersoon';
+    protected $type = 'vestigingsprofiel';
 
-    public function basisprofiel()
+    public function basisProfiel()
     {
         return $this->hasOne(Basisprofiel::class);
     }

@@ -1,5 +1,7 @@
 <?php
 
+use Vormkracht10\Company\Address;
+
 namespace Vormkracht10\KvKApi\Company;
 
 class Company
@@ -43,7 +45,10 @@ class Company
         return $this->tradeName;
     }
 
-    public function getAddresses(): array
+    /**
+     * @return Address[]
+     */
+    public function getAddresses(): ?array
     {
         return $this->addresses;
     }

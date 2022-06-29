@@ -3,11 +3,13 @@
 namespace Vormkracht10\KvKApi;
 
 use Illuminate\Support\Collection;
+use Vormkracht10\KvKApi\Company\Company;
 
 class Client
 {
     private $httpClient;
     private $baseUrl;
+    private array $results;
         
     public function __construct($httpClient, $documentParser)
     {
@@ -42,8 +44,19 @@ class Client
         $parsedData = $this->parseData($this->decodeJson($data));
 
         $parsedData->getData()->each(function ($item) {
-            dd($this->getRelatedData($item));
+            
+            $data = json_decode($this->getRelatedData($item));
+
+            $this->results[] = new Company(
+                $data->kvkNummer ?? null,
+                $data->vestigingsnummer ?? null,
+                $data->eersteHandelsnaam ?? null,
+                $data->adressen ?? null,
+                $data->websites ?? null
+            );
         });
+
+        return $this->results;
     }
 
     private function parseData(object $data)
@@ -86,9 +99,9 @@ class Client
         collect($parsedData->getLinks())->each(function ($link, $key) use (&$relatedData) {
             $response = $this->httpClient->get($link['href']);
 
-            $data = $this->getJson($response);
+            $data = $this->decodeJson($this->getJson($response));
 
-            $relatedData[$key] = $data;
+            $relatedData = $relatedData->merge($data);
         });
 
         return $relatedData;

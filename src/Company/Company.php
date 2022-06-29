@@ -6,46 +6,41 @@ class Company
 {
     private $kvkNumber;
 
-    private $locationNumber;
+    private $establishmentNumber;
 
-    private $tradeNames;
-
-    private $registrationDate;
+    private $tradeName;
 
     private $addresses;
 
+    private $websites;
+
     public function __construct(
-        int $kvkNumber,
-        int $locationNumber,
-        array $tradeNames,
-        string $registrationDate,
-        array $addresses
+        string $kvkNumber,
+        ?string $establishmentNumber,
+        ?string $tradeName,
+        ?array $addresses,
+        ?array $websites
     ) {
         $this->kvkNumber = $kvkNumber;
-        $this->locationNumber = $locationNumber;
-        $this->tradeNames = $tradeNames;
-        $this->registrationDate = $registrationDate;
+        $this->establishmentNumber = $establishmentNumber;
+        $this->tradeName = $tradeName;
         $this->addresses = $addresses;
+        $this->websites = $websites;
     }
 
-    public function getKvkNumber(): int
+    public function getKvkNumber(): string
     {
         return $this->kvkNumber;
     }
 
-    public function getLocationNumber(): int
+    public function getEstablishmentNumber(): string
     {
-        return $this->locationNumber;
+        return $this->establishmentNumber;
     }
 
-    public function getTradeNames(): array
+    public function getTradeName(): string
     {
-        return $this->tradeNames;
-    }
-
-    public function getRegistrationDate(): string
-    {
-        return $this->registrationDate;
+        return $this->tradeName;
     }
 
     public function getAddresses(): array
@@ -53,14 +48,19 @@ class Company
         return $this->addresses;
     }
 
+    public function getWebsites(): array
+    {
+        return $this->websites;
+    }
+
     public function get(): array
     {
         return [
             'kvkNumber' => $this->kvkNumber,
-            'locationNumber' => $this->locationNumber,
-            'tradeNames' => $this->tradeNames,
-            'registrationDate' => $this->registrationDate,
+            'establishmentNumber' => $this->establishmentNumber,
+            'tradeName' => $this->tradeName,
             'addresses' => $this->addresses,
+            'websites' => $this->websites,
         ];
     }
 }

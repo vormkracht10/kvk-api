@@ -10,7 +10,7 @@ class Client
     private $httpClient;
     private $baseUrl;
     private array $results;
-        
+
     public function __construct($httpClient, $documentParser)
     {
         $this->httpClient = $httpClient;
@@ -44,7 +44,6 @@ class Client
         $parsedData = $this->parseData($this->decodeJson($data));
 
         $parsedData->getData()->each(function ($item) {
-            
             $data = json_decode($this->getRelatedData($item));
 
             $this->results[] = new Company(

@@ -2,8 +2,8 @@
 
 namespace Vormkracht10\KvKApi\Models;
 
-use Swis\JsonApi\Client\Item;
 use Swis\JsonApi\Client\Concerns\HasLinks;
+use Swis\JsonApi\Client\Item;
 
 class Basisprofiel extends Item
 {

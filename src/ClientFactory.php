@@ -3,18 +3,18 @@
 namespace Vormkracht10\KvKApi;
 
 use GuzzleHttp\Client;
-use Swis\JsonApi\Client\TypeMapper;
-use Vormkracht10\KvKApi\SecondClient;
-use Vormkracht10\KvKApi\Models\Basisprofiel;
-use Vormkracht10\KvKApi\Models\Rechtspersoon;
-use Vormkracht10\KvKApi\Models\Hoofdvestiging;
 use Swis\JsonApi\Client\Parsers\DocumentParser;
+use Swis\JsonApi\Client\TypeMapper;
 use Vormkracht10\KvKApi\Client as KvKApiClient;
+use Vormkracht10\KvKApi\Models\Basisprofiel;
+use Vormkracht10\KvKApi\Models\Hoofdvestiging;
+use Vormkracht10\KvKApi\Models\Rechtspersoon;
 use Vormkracht10\KvKApi\Models\Vestigingsprofiel;
 
 class ClientFactory
 {
-    public static function create(string $apiKey, string $rootCertificate): KvKApiClient {
+    public static function create(string $apiKey, string $rootCertificate): KvKApiClient
+    {
         return new KvKApiClient(
             self::createHttpClient($apiKey, $rootCertificate),
             self::createDocumentParser()
@@ -24,7 +24,7 @@ class ClientFactory
     private static function createHttpClient(
         string $apiKey,
         string $rootCertificate
-    ){
+    ) {
         $client = new Client([
             'headers' => [
                 'apikey' => $apiKey,
@@ -35,8 +35,8 @@ class ClientFactory
         return $client;
     }
 
-    private static function createDocumentParser() {
-
+    private static function createDocumentParser()
+    {
         $typeMapper = new TypeMapper();
 
         // Get all classes from Models directory
@@ -51,7 +51,7 @@ class ClientFactory
         //         dd($class);
         //         return new $class();
         //     });
-        
+
         // Set mapping for each class
         // $classes->each(function ($class) use ($typeMapper) {
         //     $typeMapper->setMapping($class->getType(), $class);

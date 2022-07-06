@@ -50,7 +50,20 @@ class Company
      */
     public function getAddresses(): ?array
     {
-        return $this->addresses;
+        $addresses = [];
+
+        foreach ($this->addresses as $address) {
+            $addresses[] = new Address(
+                $address->type,
+                $address->straatnaam,
+                $address->huisnummer,
+                $address->postcode,
+                $address->plaats,
+                $address->land
+            );
+        }
+
+        return $addresses;
     }
 
     public function getWebsites(): array

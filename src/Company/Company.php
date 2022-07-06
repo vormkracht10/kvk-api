@@ -40,7 +40,7 @@ class Company
         return $this->establishmentNumber;
     }
 
-    public function getTradeName(): string
+    public function getTradeName(): ?string
     {
         return $this->tradeName;
     }

@@ -11,11 +11,10 @@ class Client
     private $baseUrl;
     private array $results;
 
-    public function __construct($httpClient, $documentParser)
+    public function __construct($httpClient)
     {
         $this->httpClient = $httpClient;
         $this->baseUrl = 'https://api.kvk.nl/api/v1/';
-        $this->documentParser = $documentParser;
     }
 
     public function search(string $search)
@@ -43,7 +42,7 @@ class Client
 
         $parsedData = $this->parseData($this->decodeJson($data));
 
-        $parsedData->getData()->each(function ($item) {
+        $parsedData->data->each(function ($item) {
             $data = json_decode($this->getRelatedData($item));
 
             $this->results[] = new Company(
@@ -88,15 +87,16 @@ class Client
 
         $object->data = $data;
 
-        return $this->documentParser->parse(json_encode($object));
+        return $object;
+
     }
 
     private function getRelatedData($parsedData): Collection
     {
         $relatedData = collect();
 
-        collect($parsedData->getLinks())->each(function ($link, $key) use (&$relatedData) {
-            $response = $this->httpClient->get($link['href']);
+        collect($parsedData['links'])->each(function ($link, $key) use (&$relatedData) {
+            $response = $this->httpClient->get($link);
 
             $data = $this->decodeJson($this->getJson($response));
 

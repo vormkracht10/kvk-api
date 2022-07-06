@@ -5,11 +5,17 @@
 [![Tests](https://github.com/vormkracht10/kvk-api/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/vormkracht10/kvk-api/actions/workflows/run-tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/vormkracht10/kvk-api.svg?style=flat-square)](https://packagist.org/packages/vormkracht10/kvk-api)
 
-PHP package to communicate with the business register of the Dutch Chamber of Commerce. The following APIs are available:
+PHP package to communicate with the business register of the Dutch Chamber of Commerce. 
 
-* Chamber of Commerce Trade Register Search (KVK Handelsregister Zoeken)
-* Chamber of Commerce Trade Register Basic Profile (KVK Handelsregister Basisprofiel)
-* Chamber of Commerce Trade Register Establishment Profile (KVK Handelsregister Vestigingsprofiel)
+At the moment it is only possible to search by company name. The result will contain the following data: 
+
+<ul>
+  <li>KvK number</li>
+  <li>Establishment number</li>
+  <li>Tradename</li>
+  <li>Address(es) (type, full address, street, housenumber, zip, city and country)</li>
+  <li>Website(s)</li>
+</ul>
 
 ## Installation
 
@@ -35,29 +41,6 @@ $kvk = (new Client($apiKey, $rootCertificate));
 
 // Search by company name
 $companies = $kvk->search('Vormkracht10');
-
-// Result:
-Vormkracht10\KvKApi\Company\Company {
-  -kvkNumber: "76558606"
-  -establishmentNumber: "000044332491"
-  -tradeName: "Vormkracht10 B.V."
-  -addresses: array:1 [
-    0 => {#829
-      +"type": "bezoekadres"
-      +"indAfgeschermd": "Nee"
-      +"volledigAdres": "St. Annastraat 175 6524EV Nijmegen"
-      +"straatnaam": "St. Annastraat"
-      +"huisnummer": 175
-      +"postcode": "6524EV"
-      +"plaats": "Nijmegen"
-      +"land": "Nederland"
-    }
-  ]
-  -websites: array:1 [
-    0 => "www.vormkracht10.nl"
-  ]
-}
-
 ```
 > Note: if you don't have an API key yet, get yours at the [developer portal](https://developers.kvk.nl/) of the Chamber of Commerce
 

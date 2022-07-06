@@ -6,8 +6,8 @@ class Address
 {
     public function __construct(
         string $type,
-        string $street,
-        int $houseNumber,
+        ?string $street,
+        ?int $houseNumber,
         string $postalCode,
         string $city,
         string $country
@@ -25,12 +25,12 @@ class Address
         return $this->type;
     }
 
-    public function getStreet(): string
+    public function getStreet(): ?string
     {
         return $this->street;
     }
 
-    public function getHouseNumber(): int
+    public function getHouseNumber(): ?int
     {
         return $this->houseNumber;
     }

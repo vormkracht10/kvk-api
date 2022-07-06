@@ -22,21 +22,41 @@ composer require vormkracht10/kvk-api
 ## Usage
 
 ```php
-use Vormkracht10\KvkApi\Client;
+use Vormkracht10\KvkApi\ClientFactory;
 
 $apiKey = '<KVK_API_KEY>';
 $rootCertificate = '<PATH_TO_SSL_CERT>';
+
+$kvk = ClientFactory::create($apiKey, $rootCertificate);
+
+$companies = $kvk->fetchSearch('Vormkracht10');
 
 $kvk = (new Client($apiKey, $rootCertificate));
 
 // Search by company name
 $companies = $kvk->search('Vormkracht10');
 
-// Search basic profile by KvK number
-$basicProfile = $kvk->getBasicProfile('76558606')
-
-// Search establishment profile by establishment number
-$establishmentProfile = $kvk->getEstablishmentProfile('000044332491')
+// Result:
+Vormkracht10\KvKApi\Company\Company {
+  -kvkNumber: "76558606"
+  -establishmentNumber: "000044332491"
+  -tradeName: "Vormkracht10 B.V."
+  -addresses: array:1 [
+    0 => {#829
+      +"type": "bezoekadres"
+      +"indAfgeschermd": "Nee"
+      +"volledigAdres": "St. Annastraat 175 6524EV Nijmegen"
+      +"straatnaam": "St. Annastraat"
+      +"huisnummer": 175
+      +"postcode": "6524EV"
+      +"plaats": "Nijmegen"
+      +"land": "Nederland"
+    }
+  ]
+  -websites: array:1 [
+    0 => "www.vormkracht10.nl"
+  ]
+}
 
 ```
 > Note: if you don't have an API key yet, get yours at the [developer portal](https://developers.kvk.nl/) of the Chamber of Commerce

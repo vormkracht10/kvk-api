@@ -88,7 +88,6 @@ class Client
         $object->data = $data;
 
         return $object;
-
     }
 
     private function getRelatedData($parsedData): Collection

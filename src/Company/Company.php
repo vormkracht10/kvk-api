@@ -55,8 +55,8 @@ class Company
         foreach ($this->addresses as $address) {
             $addresses[] = new Address(
                 $address->type,
-                $address->straatnaam,
-                $address->huisnummer,
+                $address->straatnaam ?? null,
+                $address->huisnummer ?? null,
                 $address->postcode,
                 $address->plaats,
                 $address->land

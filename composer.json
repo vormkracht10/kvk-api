@@ -17,6 +17,7 @@
     "require": {
         "php": "^7.4",
         "guzzlehttp/guzzle": "^7.0",
+        "illuminate/support": "^8.83",
         "swisnl/json-api-client": "^2.0"
     },
     "require-dev": {

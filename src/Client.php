@@ -2,53 +2,106 @@
 
 namespace Vormkracht10\KvKApi;
 
-use GuzzleHttp\Client as GuzzleClient;
+use Illuminate\Support\Collection;
+use Vormkracht10\KvKApi\Company\Company;
 
 class Client
 {
-    protected string $apiKey;
-    protected string $baseUrl;
-    protected string $rootCertificate;
+    private $httpClient;
+    private $baseUrl;
+    private array $results;
 
-    public function __construct(string $apiKey, string $rootCertificate)
+    public function __construct($httpClient)
     {
-        $this->apiKey = $apiKey;
+        $this->httpClient = $httpClient;
         $this->baseUrl = 'https://api.kvk.nl/api/v1/';
-        $this->rootCertificate = $rootCertificate;
     }
 
-    private function createHttpRequest(string $url): object
+    public function search(string $search)
     {
-        $http = new GuzzleClient();
+        $url = $this->baseUrl . 'zoeken?handelsnaam=' . $search;
 
-        $response = $http->request('GET', $url, [
-            'headers' => [
-                'apikey' => $this->apiKey,
-            ],
-            'verify' => $this->rootCertificate ?? false,
-        ]);
+        $response = $this->httpClient->get($url);
 
-        return json_decode($response->getBody()->getContents());
+        return $this->getJson($response);
     }
 
-    public function search(string $companyName): object
+    private function getJson(object $response)
     {
-        $url = $this->baseUrl . 'zoeken?handelsnaam=' . $companyName;
-
-        return $this->createHttpRequest($url);
+        return $response->getBody()->getContents();
     }
 
-    public function getBasicProfile(string $kvkNumber): object
+    private function decodeJson(string $json)
     {
-        $url = $this->baseUrl . 'basisprofielen/' . $kvkNumber;
-
-        return $this->createHttpRequest($url);
+        return json_decode($json);
     }
 
-    public function getEstablishmentProfile(string $locationNumber): object
+    public function fetchSearch(string $search)
     {
-        $url = $this->baseUrl . 'vestigingsprofielen/' . $locationNumber;
+        $data = $this->search($search);
 
-        return $this->createHttpRequest($url);
+        $parsedData = $this->parseData($this->decodeJson($data));
+
+        $parsedData->data->each(function ($item) {
+            $data = json_decode($this->getRelatedData($item));
+
+            $this->results[] = new Company(
+                $data->kvkNummer ?? null,
+                $data->vestigingsnummer ?? null,
+                $data->eersteHandelsnaam ?? null,
+                $data->adressen ?? null,
+                $data->websites ?? null
+            );
+        });
+
+        return $this->results;
+    }
+
+    private function parseData(object $data)
+    {
+        $data = collect($data->resultaten);
+
+        $data = $data->map(function ($value, $key) {
+            // Set attributes
+            $value->attributes = collect($value)->except(['type', 'links']);
+
+            // Set unique id
+            $value->id = uniqid();
+
+            // Remove all things in attributes that are inside $value
+            $value = collect($value)->except($value->attributes->keys());
+
+            // Set links
+            $links = collect($value['links']);
+
+            $links = $links->mapWithKeys(function ($value, $key) {
+                return [$value->rel => $value->href];
+            });
+
+            $value['links'] = $links;
+
+            return $value;
+        });
+
+        $object = new \stdClass();
+
+        $object->data = $data;
+
+        return $object;
+    }
+
+    private function getRelatedData($parsedData): Collection
+    {
+        $relatedData = collect();
+
+        collect($parsedData['links'])->each(function ($link, $key) use (&$relatedData) {
+            $response = $this->httpClient->get($link);
+
+            $data = $this->decodeJson($this->getJson($response));
+
+            $relatedData = $relatedData->merge($data);
+        });
+
+        return $relatedData;
     }
 }

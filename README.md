@@ -35,10 +35,6 @@ $rootCertificate = '<PATH_TO_SSL_CERT>';
 
 $kvk = ClientFactory::create($apiKey, $rootCertificate);
 
-$companies = $kvk->fetchSearch('Vormkracht10');
-
-$kvk = (new Client($apiKey, $rootCertificate));
-
 // Search by company name
 $companies = $kvk->search('Vormkracht10');
 ```

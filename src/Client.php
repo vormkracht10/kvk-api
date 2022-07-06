@@ -17,7 +17,7 @@ class Client
         $this->baseUrl = 'https://api.kvk.nl/api/v1/';
     }
 
-    public function search(string $search)
+    public function getData(string $search)
     {
         $url = $this->baseUrl . 'zoeken?handelsnaam=' . $search;
 
@@ -36,9 +36,9 @@ class Client
         return json_decode($json);
     }
 
-    public function fetchSearch(string $search)
+    public function search(string $search)
     {
-        $data = $this->search($search);
+        $data = $this->getData($search);
 
         $parsedData = $this->parseData($this->decodeJson($data));
 
@@ -62,16 +62,12 @@ class Client
         $data = collect($data->resultaten);
 
         $data = $data->map(function ($value, $key) {
-            // Set attributes
             $value->attributes = collect($value)->except(['type', 'links']);
 
-            // Set unique id
             $value->id = uniqid();
 
-            // Remove all things in attributes that are inside $value
             $value = collect($value)->except($value->attributes->keys());
 
-            // Set links
             $links = collect($value['links']);
 
             $links = $links->mapWithKeys(function ($value, $key) {

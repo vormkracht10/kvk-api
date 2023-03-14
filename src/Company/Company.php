@@ -2,7 +2,7 @@
 
 namespace Vormkracht10\KvKApi\Company;
 
-use Vormkracht10\Company\Address;
+use Vormkracht10\KvKApi\Company\Address;
 
 class Company
 {

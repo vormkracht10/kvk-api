@@ -1,8 +1,8 @@
 <?php
 
-use Vormkracht10\Company\Address;
-
 namespace Vormkracht10\KvKApi\Company;
+
+use Vormkracht10\Company\Address;
 
 class Company
 {

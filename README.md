@@ -24,6 +24,10 @@ You can install the package via composer:
 composer require vormkracht10/kvk-api
 ```
 
+## Upgrade guide
+
+See the [upgrade guide](docs/upgrade.md) for more information on what has changed recently.
+
 ## Usage
 
 > Note: if you don't have an API key yet, get yours at the [developer portal](https://developers.kvk.nl/) of the Chamber of Commerce

@@ -26,22 +26,33 @@ composer require vormkracht10/kvk-api
 
 ## Usage
 
+> Note: if you don't have an API key yet, get yours at the [developer portal](https://developers.kvk.nl/) of the Chamber of Commerce
+
 ```php
 use Vormkracht10\KvkApi\ClientFactory;
 $apiKey = '<KVK_API_KEY>';
-$rootCertificate = '<PATH_TO_SSL_CERT>'; // Optional
+
+// Optional SSL certificate
+$rootCertificate = '<PATH_TO_SSL_CERT>';
+
 $kvk = ClientFactory::create($apiKey, $rootCertificate);
 
 // Search by company name
 $companies = $kvk->search('Vormkracht10');
+```
 
-// Search with additional parameters
+### Search with additional parameters
+
+```php
 $companies = $kvk->search('Vormkracht10', [
 'pagina' => 1,
 'resultatenPerPagina' => 10
 ]);
+```
 
-// Set page and results per page before searching
+### Set page and results per page before searching
+
+```php
 $kvk->setPage(2);
 $kvk->setResultsPerPage(20);
 ```
@@ -57,8 +68,6 @@ $companies = $kvk->searchByKvkNumber('12345678');
 ```php
 $companies = $kvk->searchByRSIN('12345678');
 ```
-
-> Note: if you don't have an API key yet, get yours at the [developer portal](https://developers.kvk.nl/) of the Chamber of Commerce
 
 ## Testing
 

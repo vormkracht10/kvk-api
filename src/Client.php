@@ -14,12 +14,12 @@ class Client
     public function __construct($httpClient)
     {
         $this->httpClient = $httpClient;
-        $this->baseUrl = 'https://api.kvk.nl/api/v1/';
+        $this->baseUrl = 'https://api.kvk.nl/api/v2/';
     }
 
     public function getData(string $search)
     {
-        $url = $this->baseUrl . 'zoeken?handelsnaam=' . $search;
+        $url = $this->baseUrl . 'zoeken?naam=' . urlencode($search);
 
         $response = $this->httpClient->get($url);
 
@@ -42,14 +42,14 @@ class Client
 
         $parsedData = $this->parseData($this->decodeJson($data));
 
-        $parsedData->data->each(function ($item) {
+        $parsedData->each(function ($item) {
             $data = json_decode($this->getRelatedData($item));
 
             $this->results[] = new Company(
                 $data->kvkNummer ?? null,
                 $data->vestigingsnummer ?? null,
-                $data->eersteHandelsnaam ?? null,
-                $data->adressen ?? null,
+                $data->naam ?? null, // Changed from eersteHandelsnaam to naam
+                $data->adres ?? null, // Changed from adressen to adres
                 $data->websites ?? null
             );
         });
@@ -61,36 +61,32 @@ class Client
     {
         $data = collect($data->resultaten);
 
-        $data = $data->map(function ($value, $key) {
-            $value->attributes = collect($value)->except(['type', 'links']);
-
+        $data = $data->map(function ($value) {
+            $value = (object) $value;
+            $value->attributes = collect((array) $value)->except(['type', 'links']);
             $value->id = uniqid();
 
-            $value = collect($value)->except($value->attributes->keys());
-
-            $links = collect($value['links']);
-
-            $links = $links->mapWithKeys(function ($value, $key) {
-                return [$value->rel => $value->href];
-            });
-
-            $value['links'] = $links;
+            if (isset($value->links)) {
+                $links = collect($value->links);
+                $links = $links->mapWithKeys(function ($linkObj) {
+                    return [$linkObj->rel => $linkObj->href];
+                });
+                $value->links = $links;
+            } else {
+                $value->links = collect();
+            }
 
             return $value;
         });
 
-        $object = new \stdClass();
-
-        $object->data = $data;
-
-        return $object;
+        return $data;
     }
 
     private function getRelatedData($parsedData): Collection
     {
         $relatedData = collect();
 
-        collect($parsedData['links'])->each(function ($link, $key) use (&$relatedData) {
+        collect($parsedData->links)->each(function ($link, $key) use (&$relatedData) {
             $response = $this->httpClient->get($link);
 
             $data = $this->decodeJson($this->getJson($response));

@@ -24,7 +24,7 @@ class Client
         $queryParams = array_merge([
             'naam' => $search,
             'pagina' => $this->page ?? 1,
-            'resultatenPerPagina' => $this->resultsPerPage ?? 10
+            'resultatenPerPagina' => $this->resultsPerPage ?? 10,
         ], $params);
         $data = $this->getData($queryParams);
 
@@ -67,12 +67,14 @@ class Client
     public function setPage(int $page)
     {
         $this->page = $page;
+
         return $this;
     }
 
     public function setResultsPerPage(int $resultsPerPage)
     {
         $this->resultsPerPage = $resultsPerPage;
+
         return $this;
     }
 

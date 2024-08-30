@@ -3,7 +3,6 @@
 namespace Vormkracht10\KvKApi;
 
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;

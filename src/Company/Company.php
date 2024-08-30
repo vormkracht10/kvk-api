@@ -4,16 +4,18 @@ namespace Vormkracht10\KvKApi\Company;
 
 class Company
 {
-    private $kvkNumber;
+    private string $kvkNumber;
+    private ?string $establishmentNumber;
+    private ?string $tradeName;
+    /** @var array<mixed>|null */
+    private ?array $addresses;
+    /** @var array<string>|null */
+    private ?array $websites;
 
-    private $establishmentNumber;
-
-    private $tradeName;
-
-    private $addresses;
-
-    private $websites;
-
+    /**
+     * @param array<mixed>|null $addresses
+     * @param array<string>|null $websites
+     */
     public function __construct(
         string $kvkNumber,
         ?string $establishmentNumber,
@@ -33,7 +35,7 @@ class Company
         return $this->kvkNumber;
     }
 
-    public function getEstablishmentNumber(): string
+    public function getEstablishmentNumber(): ?string
     {
         return $this->establishmentNumber;
     }
@@ -44,10 +46,14 @@ class Company
     }
 
     /**
-     * @return Address[]
+     * @return array<Address>|null
      */
     public function getAddresses(): ?array
     {
+        if ($this->addresses === null) {
+            return null;
+        }
+
         $addresses = [];
 
         foreach ($this->addresses as $address) {
@@ -64,11 +70,17 @@ class Company
         return $addresses;
     }
 
-    public function getWebsites(): array
+    /**
+     * @return array<string>|null
+     */
+    public function getWebsites(): ?array
     {
         return $this->websites;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function get(): array
     {
         return [

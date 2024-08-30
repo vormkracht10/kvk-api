@@ -4,6 +4,13 @@ namespace Vormkracht10\KvKApi\Company;
 
 class Address
 {
+    private string $type;
+    private ?string $street;
+    private ?int $houseNumber;
+    private string $postalCode;
+    private string $city;
+    private string $country;
+
     public function __construct(
         string $type,
         ?string $street,
@@ -50,6 +57,9 @@ class Address
         return $this->country;
     }
 
+    /**
+     * @return array<string, string|int|null>
+     */
     public function get(): array
     {
         return [

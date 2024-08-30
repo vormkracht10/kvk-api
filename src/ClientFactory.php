@@ -17,7 +17,7 @@ class ClientFactory
     private static function createHttpClient(
         string $apiKey,
         ?string $rootCertificate = null
-    ) {
+    ): Client {
         if ($rootCertificate === null) {
             return new Client([
                 'headers' => [

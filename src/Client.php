@@ -10,6 +10,8 @@ class Client
     private $httpClient;
     private $baseUrl;
     private array $results;
+    private int $page;
+    private int $resultsPerPage;
 
     public function __construct($httpClient)
     {
@@ -17,9 +19,35 @@ class Client
         $this->baseUrl = 'https://api.kvk.nl/api/v2/';
     }
 
-    public function getData(string $search)
+    public function search(string $search, array $params = [])
     {
-        $url = $this->baseUrl . 'zoeken?naam=' . urlencode($search);
+        $queryParams = array_merge([
+            'naam' => $search,
+            'pagina' => $this->page ?? 1,
+            'resultatenPerPagina' => $this->resultsPerPage ?? 10
+        ], $params);
+        $data = $this->getData($queryParams);
+
+        $parsedData = $this->parseData($this->decodeJson($data));
+
+        $parsedData->each(function ($item) {
+            $data = json_decode($this->getRelatedData($item));
+
+            $this->results[] = new Company(
+                $data->kvkNummer ?? null,
+                $data->vestigingsnummer ?? null,
+                $data->naam ?? null,
+                $data->adres ?? null,
+                $data->websites ?? null
+            );
+        });
+
+        return $this->results;
+    }
+
+    private function getData(array $params)
+    {
+        $url = $this->baseUrl . 'zoeken?' . http_build_query($params);
 
         $response = $this->httpClient->get($url);
 
@@ -36,25 +64,31 @@ class Client
         return json_decode($json);
     }
 
-    public function search(string $search)
+    public function setPage(int $page)
     {
-        $data = $this->getData($search);
+        $this->page = $page;
+        return $this;
+    }
 
-        $parsedData = $this->parseData($this->decodeJson($data));
+    public function setResultsPerPage(int $resultsPerPage)
+    {
+        $this->resultsPerPage = $resultsPerPage;
+        return $this;
+    }
 
-        $parsedData->each(function ($item) {
-            $data = json_decode($this->getRelatedData($item));
+    public function searchByKvkNumber(string $kvkNumber, array $params = [])
+    {
+        return $this->search('', array_merge(['kvkNummer' => $kvkNumber], $params));
+    }
 
-            $this->results[] = new Company(
-                $data->kvkNummer ?? null,
-                $data->vestigingsnummer ?? null,
-                $data->naam ?? null, // Changed from eersteHandelsnaam to naam
-                $data->adres ?? null, // Changed from adressen to adres
-                $data->websites ?? null
-            );
-        });
+    public function searchByRsin(string $rsin, array $params = [])
+    {
+        return $this->search('', array_merge(['rsin' => $rsin], $params));
+    }
 
-        return $this->results;
+    public function searchByVestigingsnummer(string $vestigingsnummer, array $params = [])
+    {
+        return $this->search('', array_merge(['vestigingsnummer' => $vestigingsnummer], $params));
     }
 
     private function parseData(object $data)
@@ -75,6 +109,9 @@ class Client
             } else {
                 $value->links = collect();
             }
+
+            $value->actief = $value->actief ?? null;
+            $value->vervallenNaam = $value->vervallenNaam ?? null;
 
             return $value;
         });

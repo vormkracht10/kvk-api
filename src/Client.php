@@ -45,7 +45,7 @@ class Client
                 $data->kvkNummer ?? '',
                 $data->vestigingsnummer ?? null,
                 $data->naam ?? null,
-                $data->adres ?? null,
+                $data->adressen ?? null,
                 $data->websites ?? null
             );
         };
